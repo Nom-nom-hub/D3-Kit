@@ -93,16 +93,23 @@ create_feature_structure() {
 
 # Load template file
 load_template() {
-  local repo_root=$1
-  local template_name=$2
-  local template_file="$repo_root/D3-templates/$template_name"
-  
-  if [[ ! -f "$template_file" ]]; then
-    echo "ERROR: Template not found: $template_file" >&2
-    return 1
-  fi
-  
-  cat "$template_file"
+   local repo_root=$1
+   local template_name=$2
+   
+   # Try .d3/D3-templates first, then D3-templates
+   local template_file="$repo_root/.d3/D3-templates/$template_name"
+   
+   if [[ ! -f "$template_file" ]]; then
+     # Try alternative location
+     template_file="$repo_root/D3-templates/$template_name"
+   fi
+   
+   if [[ ! -f "$template_file" ]]; then
+     echo "ERROR: Template not found: $template_name in $repo_root/.d3/D3-templates or $repo_root/D3-templates" >&2
+     return 1
+   fi
+   
+   cat "$template_file"
 }
 
 # Replace placeholder in content
