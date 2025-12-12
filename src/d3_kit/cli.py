@@ -334,7 +334,9 @@ def init(
         script_choices = list(SCRIPT_TYPE_CHOICES.items())
         for i, (key, desc) in enumerate(script_choices, 1):
             console.print(f"  [bold]{i}[/bold]. {desc} ({key})")
-        choice = typer.prompt("Enter your choice", type=int, default=2 if sys.platform == "win32" else 1)
+        choice = typer.prompt(
+            "Enter your choice", type=int, default=2 if sys.platform == "win32" else 1
+        )
         if choice < 1 or choice > len(script_choices):
             console.print("[red]Invalid choice[/red]")
             raise typer.Exit(1)
