@@ -95,10 +95,17 @@ function Get-Template {
         [string]$TemplateName
     )
     
-    $templateFile = Join-Path $repoRoot "D3-templates" $TemplateName
+    # Try .d3/D3-templates first, then D3-templates
+    $templateFile = Join-Path (Join-Path $repoRoot ".d3") "D3-templates"
+    $templateFile = Join-Path $templateFile $TemplateName
     
     if (-not (Test-Path $templateFile)) {
-        throw "Template not found: $templateFile"
+        # Try alternative location
+        $templateFile = Join-Path (Join-Path $repoRoot "D3-templates") $TemplateName
+    }
+    
+    if (-not (Test-Path $templateFile)) {
+        throw "Template not found: $TemplateName in $repoRoot/.d3/D3-templates or $repoRoot/D3-templates"
     }
     
     return (Get-Content $templateFile -Raw)
