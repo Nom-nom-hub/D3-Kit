@@ -1,0 +1,13 @@
+{
+    "chat.promptFilesRecommendations": {
+        "d3.constitution": true,
+        "d3.intend": true,
+        "d3.plan": true,
+        "d3.tasks": true,
+        "d3.implement": true
+    },
+    "chat.tools.terminal.autoApprove": {
+        ".d3/scripts/bash/": true,
+        ".d3/scripts/powershell/": true
+    }
+}

@@ -1,0 +1,26 @@
+# Normalize line endings
+* text=auto
+
+# Denote files that should always be eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+
+# Denote files that are not text but should not be mangled
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.webp binary
+
+# Python files
+*.py linguist-language=Python
+*.py merge=union
+
+# Markdown files
+*.md linguist-language=Markdown
+
+# Template files
+*.md linguist-documentation=false
