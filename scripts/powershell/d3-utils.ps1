@@ -3,12 +3,20 @@
 $ErrorActionPreference = "Stop"
 
 # Get the repo root directory
+# If $StartDir is provided, start from there; otherwise walk up from script location
 function Get-RepoRoot {
-    # Start from script's directory first, then walk up
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-    $currentDir = if ($scriptDir) { $scriptDir } else { Get-Location }
+    param([string]$StartDir)
+    
+    if (-not $StartDir) {
+        # Walk up from script directory (where d3-utils.ps1 is located)
+        $StartDir = Split-Path -Parent $PSCommandPath
+        # Go up to parent of scripts folder, then parent again (to get past .d3)
+        $StartDir = Split-Path -Parent $StartDir  # Now in .d3
+        $StartDir = Split-Path -Parent $StartDir  # Now in project root
+    }
     
     # Walk up to find .git, .d3, or D3-Kit-Methodology.md
+    $currentDir = $StartDir
     while ($currentDir -ne [System.IO.Path]::GetPathRoot($currentDir)) {
         if ((Test-Path (Join-Path $currentDir ".git")) -or `
             (Test-Path (Join-Path $currentDir ".d3")) -or `

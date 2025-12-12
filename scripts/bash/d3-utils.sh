@@ -10,11 +10,19 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Get the repo root directory
+# If $1 is provided as start directory, use that; otherwise calculate from script location
 get_repo_root() {
-  # Start from script's directory first, then walk up
-  local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-  local current_dir="$script_dir"
+  local current_dir="${1:-}"
   
+  if [[ -z "$current_dir" ]]; then
+    # Get script directory: scripts/bash/d3-utils.sh
+    # Go up: scripts/bash -> scripts -> (should be in .d3 already if in calcultor/.d3)
+    # Need to go up 2 levels to get to project root
+    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    current_dir="$(dirname "$(dirname "$script_dir")")"  # Up 2 levels from bash to project root
+  fi
+  
+  # Walk up to find .git, .d3, or D3-Kit-Methodology.md
   while [[ "$current_dir" != "/" ]]; do
     if [[ -d "$current_dir/.git" ]] || [[ -d "$current_dir/.d3" ]] || [[ -f "$current_dir/D3-Kit-Methodology.md" ]]; then
       echo "$current_dir"
