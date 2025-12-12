@@ -228,7 +228,24 @@ EOF
      echo "Generated agent-specific commands for $agent"
    fi
 
-  ( cd "$base_dir" && zip -r "../d3-kit-template-${agent}-${script}-${NEW_VERSION}.zip" . )
+   # Copy D3 templates
+   [[ -d D3-templates ]] && { cp -r D3-templates "$base_dir/"; echo "Copied D3-templates"; }
+
+   # Create scripts directory with appropriate script type
+   mkdir -p "$base_dir/scripts"
+   case $script in
+     sh)
+       mkdir -p "$base_dir/scripts/bash"
+       echo "#!/bin/bash" > "$base_dir/scripts/bash/example.sh"
+       echo "# Add your bash scripts here" >> "$base_dir/scripts/bash/example.sh"
+       ;;
+     ps)
+       mkdir -p "$base_dir/scripts/powershell"
+       echo "# Add your PowerShell scripts here" > "$base_dir/scripts/powershell/example.ps1"
+       ;;
+   esac
+
+   ( cd "$base_dir" && zip -r "../d3-kit-template-${agent}-${script}-${NEW_VERSION}.zip" . )
   echo "Created $GENRELEASES_DIR/d3-kit-template-${agent}-${script}-${NEW_VERSION}.zip"
 }
 
