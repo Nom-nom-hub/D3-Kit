@@ -181,5 +181,4 @@ function Test-RequiredArguments {
     }
 }
 
-# Export functions for use in other scripts
-Export-ModuleMember -Function * -Variable *
+# Functions defined above are automatically available when dot-sourced
