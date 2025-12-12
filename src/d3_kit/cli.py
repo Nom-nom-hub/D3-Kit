@@ -1,4 +1,5 @@
 """D3-Kit: Developer-Driven Development Framework CLI"""
+
 import typer
 from pathlib import Path
 import shutil
@@ -9,16 +10,21 @@ console = Console()
 
 app = typer.Typer()
 
+
 @app.command()
 def init(
     project_name: str = typer.Argument(..., help="Name for your new project directory"),
     ai_assistant: str = typer.Option(None, "--ai", help="AI assistant to use"),
-    script_variant: str = typer.Option("sh", "--script", help="Script variant to use: sh (bash/zsh) or ps (PowerShell)"),
+    script_variant: str = typer.Option(
+        "sh", "--script", help="Script variant to use: sh (bash/zsh) or ps (PowerShell)"
+    ),
 ):
     """
     Initialize a new D3-Kit project from the latest template
     """
-    console.print(f"\n[dark_cyan]Initializing D3-Kit project: {project_name}[/dark_cyan]")
+    console.print(
+        f"\n[dark_cyan]Initializing D3-Kit project: {project_name}[/dark_cyan]"
+    )
 
     # Create directory structure
     project_path = Path(project_name)
@@ -38,7 +44,9 @@ def init(
 
     # Try to copy our local scripts to the project
     local_bash_dir = Path(__file__).parent.parent.parent / "scripts" / "bash"
-    local_powershell_dir = Path(__file__).parent.parent.parent / "scripts" / "powershell"
+    local_powershell_dir = (
+        Path(__file__).parent.parent.parent / "scripts" / "powershell"
+    )
 
     if local_bash_dir.exists():
         for script_file in local_bash_dir.glob("*.sh"):
@@ -100,18 +108,30 @@ quickstart = "D3-templates/d3-commands/d3.quickstart.md"
     import d3_kit
 
     template_files = [
-        "d3.intend.md", "d3.plan.md", "d3.tasks.md",
-        "d3.implement.md", "d3.clarify.md", "d3.analyze.md",
-        "d3.checklist.md", "d3.constitution.md", "d3.research.md",
-        "d3.data.md", "d3.contracts.md", "d3.quickstart.md",
-        "d3.taskstoissues.md"
+        "d3.intend.md",
+        "d3.plan.md",
+        "d3.tasks.md",
+        "d3.implement.md",
+        "d3.clarify.md",
+        "d3.analyze.md",
+        "d3.checklist.md",
+        "d3.constitution.md",
+        "d3.research.md",
+        "d3.data.md",
+        "d3.contracts.md",
+        "d3.quickstart.md",
+        "d3.taskstoissues.md",
     ]
 
     for template_file in template_files:
         try:
             # Try to read from package resources first
-            if importlib.resources.is_resource(d3_kit, f"D3-templates/d3-commands/{template_file}"):
-                content = importlib.resources.read_text(d3_kit, f"D3-templates/d3-commands/{template_file}")
+            if importlib.resources.is_resource(
+                d3_kit, f"D3-templates/d3-commands/{template_file}"
+            ):
+                content = importlib.resources.read_text(
+                    d3_kit, f"D3-templates/d3-commands/{template_file}"
+                )
                 (commands_dir / template_file).write_text(content)
             else:
                 # Create empty file if template not found
@@ -123,7 +143,9 @@ quickstart = "D3-templates/d3-commands/d3.quickstart.md"
     console.print(f"[green]✓[/green] Project structure created at {project_path}")
     console.print(f"[green]✓[/green] D3-Kit configuration created")
     console.print(f"[green]✓[/green] Command templates installed")
-    console.print(f"[green]✓[/green] Scripts directory created with {len(list(bash_dir.glob('*.sh')))} bash and {len(list(powershell_dir.glob('*.ps1')))} PowerShell scripts")
+    console.print(
+        f"[green]✓[/green] Scripts directory created with {len(list(bash_dir.glob('*.sh')))} bash and {len(list(powershell_dir.glob('*.ps1')))} PowerShell scripts"
+    )
 
     # Show next steps
     console.print("\n[cyan]Getting Started:[/cyan]")
@@ -135,8 +157,12 @@ quickstart = "D3-templates/d3-commands/d3.quickstart.md"
 
 @app.command()
 def intend(
-    feature_description: str = typer.Argument(..., help="Description of the feature to be specified"),
-    output_file: str = typer.Option("spec.md", "--output", "-o", help="Output specification file"),
+    feature_description: str = typer.Argument(
+        ..., help="Description of the feature to be specified"
+    ),
+    output_file: str = typer.Option(
+        "spec.md", "--output", "-o", help="Output specification file"
+    ),
 ):
     """
     Create a new feature specification from a user description, capturing developer intent and user stories
@@ -149,7 +175,9 @@ def intend(
 @app.command()
 def research(
     feature_dir: str = typer.Argument(..., help="Feature directory to research"),
-    research_file: str = typer.Option("research.md", "--output", "-o", help="Output research file"),
+    research_file: str = typer.Option(
+        "research.md", "--output", "-o", help="Output research file"
+    ),
 ):
     """
     Gather technical or contextual research automatically for a feature
@@ -162,7 +190,9 @@ def research(
 @app.command()
 def data(
     feature_dir: str = typer.Argument(..., help="Feature directory to process"),
-    data_file: str = typer.Option("data-model.md", "--output", "-o", help="Output data model file"),
+    data_file: str = typer.Option(
+        "data-model.md", "--output", "-o", help="Output data model file"
+    ),
 ):
     """
     Generate/update key entities & data models for the feature
@@ -175,7 +205,9 @@ def data(
 @app.command()
 def contracts(
     feature_dir: str = typer.Argument(..., help="Feature directory to process"),
-    output_dir: str = typer.Option("contracts/", "--output", "-o", help="Output contracts directory"),
+    output_dir: str = typer.Option(
+        "contracts/", "--output", "-o", help="Output contracts directory"
+    ),
 ):
     """
     Generate API/event contracts from the plan
@@ -201,7 +233,9 @@ def plan(
 @app.command()
 def tasks(
     feature_dir: str = typer.Argument(..., help="Feature directory to process"),
-    tasks_file: str = typer.Option("tasks.md", "--output", "-o", help="Output tasks file"),
+    tasks_file: str = typer.Option(
+        "tasks.md", "--output", "-o", help="Output tasks file"
+    ),
 ):
     """
     Generate an executable task list from the implementation plan, with parallelization
@@ -214,7 +248,9 @@ def tasks(
 @app.command()
 def quickstart(
     feature_dir: str = typer.Argument(..., help="Feature directory to process"),
-    quickstart_file: str = typer.Option("quickstart.md", "--output", "-o", help="Output quickstart file"),
+    quickstart_file: str = typer.Option(
+        "quickstart.md", "--output", "-o", help="Output quickstart file"
+    ),
 ):
     """
     Produce a quickstart/validation guide to verify the feature independently
@@ -240,7 +276,9 @@ def implement(
 @app.command()
 def clarify(
     feature_dir: str = typer.Argument(..., help="Feature directory to process"),
-    spec_file: str = typer.Option("spec.md", "--spec", help="Specification file to clarify"),
+    spec_file: str = typer.Option(
+        "spec.md", "--spec", help="Specification file to clarify"
+    ),
 ):
     """
     Clarify underspecified areas (recommended before `/d3.plan`)
@@ -264,7 +302,9 @@ def analyze(
 @app.command()
 def checklist(
     feature_dir: str = typer.Argument(..., help="Feature directory to process"),
-    output_file: str = typer.Option("checklist.md", "--output", "-o", help="Output checklist file"),
+    output_file: str = typer.Option(
+        "checklist.md", "--output", "-o", help="Output checklist file"
+    ),
 ):
     """
     Generate custom quality checklists
@@ -277,7 +317,9 @@ def checklist(
 @app.command()
 def constitution(
     project_dir: str = typer.Argument(..., help="Project directory"),
-    constitution_file: str = typer.Option("d3-constitution.md", "--output", "-o", help="Constitution file to update"),
+    constitution_file: str = typer.Option(
+        "d3-constitution.md", "--output", "-o", help="Constitution file to update"
+    ),
 ):
     """
     Create or update project governing principles and development guidelines
