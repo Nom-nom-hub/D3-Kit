@@ -1,13 +1,6 @@
 name: Release
 
 on:
-  push:
-    branches: [ master ]
-    paths:
-      - 'D3-templates/**'
-      - 'scripts/**'
-      - '.github/workflows/**'
-      - 'pyproject.toml'
   workflow_dispatch:
 
 env:
