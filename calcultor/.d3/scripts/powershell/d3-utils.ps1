@@ -82,7 +82,7 @@ function New-FeatureStructure {
         [string]$FeatureName
     )
     
-    $featureDir = Join-Path $repoRoot "d3-features" "${FeatureNum}-${FeatureName}"
+    $featureDir = Join-Path (Join-Path $repoRoot "d3-features") "${FeatureNum}-${FeatureName}"
     New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
     
     return $featureDir
