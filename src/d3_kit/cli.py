@@ -65,7 +65,9 @@ class StepTracker:
 
     def add(self, key: str, label: str):
         if key not in [s["key"] for s in self.steps]:
-            self.steps.append({"key": key, "label": label, "status": "pending", "detail": ""})
+            self.steps.append(
+                {"key": key, "label": label, "status": "pending", "detail": ""}
+            )
 
     def start(self, key: str, detail: str = ""):
         self._update(key, status="running", detail=detail)
@@ -87,7 +89,9 @@ class StepTracker:
                     s["detail"] = detail
                 return
 
-        self.steps.append({"key": key, "label": key, "status": status, "detail": detail})
+        self.steps.append(
+            {"key": key, "label": key, "status": status, "detail": detail}
+        )
 
     def render(self):
         tree = Tree(f"[cyan]{self.title}[/cyan]", guide_style="grey50")
@@ -111,7 +115,9 @@ class StepTracker:
 
             if status == "pending":
                 if detail_text:
-                    line = f"{symbol} [bright_black]{label} ({detail_text})[/bright_black]"
+                    line = (
+                        f"{symbol} [bright_black]{label} ({detail_text})[/bright_black]"
+                    )
                 else:
                     line = f"{symbol} [bright_black]{label}[/bright_black]"
             else:
@@ -159,7 +165,11 @@ def show_banner():
 @app.callback()
 def callback(ctx: typer.Context):
     """Show banner when no subcommand is provided."""
-    if ctx.invoked_subcommand is None and "--help" not in sys.argv and "-h" not in sys.argv:
+    if (
+        ctx.invoked_subcommand is None
+        and "--help" not in sys.argv
+        and "-h" not in sys.argv
+    ):
         show_banner()
         console.print(Align.center("[dim]Run 'd3 --help' for usage information[/dim]"))
         console.print()
@@ -195,15 +205,15 @@ def download_and_extract_template(
     try:
         if tracker:
             tracker.start("download")
-        
+
         with httpx.Client(follow_redirects=True) as client:
             response = client.get(url, timeout=30.0)
             response.raise_for_status()
-            
+
             if tracker:
                 tracker.complete("download")
                 tracker.start("extract")
-            
+
             zip_path = project_path.parent / zip_filename
             with open(zip_path, "wb") as f:
                 f.write(response.content)
@@ -211,7 +221,7 @@ def download_and_extract_template(
             # Extract ZIP
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(str(project_path))
-            
+
             # Flatten if extracted into a single subdirectory
             items = list(project_path.iterdir())
             if len(items) == 1 and items[0].is_dir():
@@ -219,18 +229,18 @@ def download_and_extract_template(
                 for item in single_dir.iterdir():
                     shutil.move(str(item), str(project_path / item.name))
                 single_dir.rmdir()
-            
+
             if tracker:
                 tracker.complete("extract")
                 tracker.start("cleanup")
-            
+
             # Clean up ZIP
             if zip_path.exists():
                 zip_path.unlink()
-            
+
             if tracker:
                 tracker.complete("cleanup")
-            
+
             return True
     except Exception as e:
         if tracker:
@@ -242,9 +252,13 @@ def download_and_extract_template(
 
 @app.command()
 def init(
-    project_name: str = typer.Argument(None, help="Name for your new project directory"),
+    project_name: str = typer.Argument(
+        None, help="Name for your new project directory"
+    ),
     ai_assistant: str = typer.Option(
-        None, "--ai", help="AI assistant to use (e.g. claude, amp, copilot, cursor-agent)"
+        None,
+        "--ai",
+        help="AI assistant to use (e.g. claude, amp, copilot, cursor-agent)",
     ),
     script_variant: str = typer.Option(
         None, "--script", help="Script variant to use: sh (bash/zsh) or ps (PowerShell)"
@@ -270,7 +284,9 @@ def init(
         project_name = None
 
     if here and project_name:
-        console.print("[red]Error:[/red] Cannot specify both project name and --here flag")
+        console.print(
+            "[red]Error:[/red] Cannot specify both project name and --here flag"
+        )
         raise typer.Exit(1)
 
     if not here and not project_name:
@@ -307,7 +323,7 @@ def init(
             console.print()
             console.print(error_panel)
             raise typer.Exit(1)
-        
+
         project_path.mkdir(parents=True)
 
     # Determine script type
@@ -351,7 +367,9 @@ def init(
     tracker.add("final", "Finalize")
 
     try:
-        with Live(tracker.render(), console=console, refresh_per_second=4, transient=True) as live:
+        with Live(
+            tracker.render(), console=console, refresh_per_second=4, transient=True
+        ) as live:
 
             def refresh():
                 live.update(tracker.render())
@@ -523,7 +541,9 @@ def implement(
 @app.command()
 def clarify(
     feature_dir: str = typer.Argument(..., help="Feature directory to process"),
-    spec_file: str = typer.Option("spec.md", "--spec", help="Specification file to clarify"),
+    spec_file: str = typer.Option(
+        "spec.md", "--spec", help="Specification file to clarify"
+    ),
 ):
     """Clarify underspecified areas (recommended before /d3.plan)"""
     typer.echo(f"Clarifying requirements for feature: {feature_dir}")
