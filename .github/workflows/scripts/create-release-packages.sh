@@ -23,209 +23,74 @@ GENRELEASES_DIR=".genreleases"
 mkdir -p "$GENRELEASES_DIR"
 rm -rf "$GENRELEASES_DIR"/* || true
 
-generate_agent_commands() {
-  local agent=$1 output_dir=$2
+rewrite_paths() {
+  sed -E \
+    -e 's@(/?)D3-templates/@.d3/D3-templates/@g' \
+    -e 's@(/?)scripts/@.d3/scripts/@g'
+}
+
+generate_commands() {
+  local agent_prefix=$1 ext=$2 arg_format=$3 output_dir=$4 script_variant=$5
   mkdir -p "$output_dir"
-  
-  # Determine if this agent uses TOML or Markdown
-  case $agent in
-    gemini|qwen)
-      # Generate individual TOML files for these agents
-      cat > "$output_dir/d3.intend.toml" <<'CMD_EOF'
-name = "/d3.intend"
-description = "Specify Feature with Intent"
-help = "Capture the developer's intent and create a specification for a new feature."
-usage = "/d3.intend <feature-description>"
-output = "Creates d3-features/[feature-name]/spec.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.plan.toml" <<'CMD_EOF'
-name = "/d3.plan"
-description = "Create Implementation Plan"
-help = "Create a technical implementation plan from the specification."
-usage = "/d3.plan <feature-directory>"
-output = "Creates d3-features/[feature-name]/plan.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.tasks.toml" <<'CMD_EOF'
-name = "/d3.tasks"
-description = "Generate Executable Tasks"
-help = "Generate actionable task list from the implementation plan."
-usage = "/d3.tasks <feature-directory>"
-output = "Creates d3-features/[feature-name]/tasks.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.implement.toml" <<'CMD_EOF'
-name = "/d3.implement"
-description = "Execute Implementation"
-help = "Execute all tasks to build the feature according to the plan."
-usage = "/d3.implement <feature-directory>"
-output = "Implements the feature based on the task list"
-CMD_EOF
-
-      cat > "$output_dir/d3.clarify.toml" <<'CMD_EOF'
-name = "/d3.clarify"
-description = "Clarify Requirements"
-help = "Ask structured questions to clarify underspecified areas before planning."
-usage = "/d3.clarify <feature-directory>"
-output = "Updates d3-features/[feature-name]/spec.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.analyze.toml" <<'CMD_EOF'
-name = "/d3.analyze"
-description = "Cross-artifact Analysis"
-help = "Analyze consistency and coverage across specification, plan, and tasks."
-usage = "/d3.analyze <feature-directory>"
-output = "Creates d3-features/[feature-name]/analysis.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.checklist.toml" <<'CMD_EOF'
-name = "/d3.checklist"
-description = "Generate Quality Checklist"
-help = "Generate custom quality checklists for validating requirements."
-usage = "/d3.checklist <feature-directory>"
-output = "Creates d3-features/[feature-name]/checklist.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.constitution.toml" <<'CMD_EOF'
-name = "/d3.constitution"
-description = "Project Principles"
-help = "Create or update project governing principles and development guidelines."
-usage = "/d3.constitution"
-output = "Creates or updates d3-constitution.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.research.toml" <<'CMD_EOF'
-name = "/d3.research"
-description = "Gather Technical Research"
-help = "Gather technical or contextual research automatically for a feature."
-usage = "/d3.research <feature-directory>"
-output = "Creates d3-features/[feature-name]/research.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.data.toml" <<'CMD_EOF'
-name = "/d3.data"
-description = "Generate Data Models"
-help = "Generate and update key entities and data models for the feature."
-usage = "/d3.data <feature-directory>"
-output = "Creates d3-features/[feature-name]/data-model.md"
-CMD_EOF
-
-      cat > "$output_dir/d3.contracts.toml" <<'CMD_EOF'
-name = "/d3.contracts"
-description = "Generate API Contracts"
-help = "Generate API and event contracts from the plan."
-usage = "/d3.contracts <feature-directory>"
-output = "Creates d3-features/[feature-name]/contracts/"
-CMD_EOF
-
-      cat > "$output_dir/d3.quickstart.toml" <<'CMD_EOF'
-name = "/d3.quickstart"
-description = "Create Validation Guide"
-help = "Produce a quickstart/validation guide to verify the feature independently."
-usage = "/d3.quickstart <feature-directory>"
-output = "Creates d3-features/[feature-name]/quickstart.md"
-CMD_EOF
-      ;;
-    *)
-      # Generate Markdown format for all other agents
-      cat > "$output_dir/d3.intend.md" <<'CMD_EOF'
-# /d3.intend - Specify Feature with Intent
-
-Capture the developer's intent and create a specification for a new feature.
-
-**Usage:** `/d3.intend <feature-description>`
-
-**Output:** Creates `d3-features/[feature-name]/spec.md`
-
-**Purpose:** Define what you want to build (the problem you're solving), who it's for, and why it matters.
-CMD_EOF
-      
-      cat > "$output_dir/d3.plan.md" <<'CMD_EOF'
-# /d3.plan - Create Implementation Plan
-
-Create a technical implementation plan from the specification.
-
-**Usage:** `/d3.plan <feature-directory>`
-
-**Output:** Creates `d3-features/[feature-name]/plan.md`
-
-**Purpose:** Map user stories to technical tasks with your chosen tech stack and architecture.
-CMD_EOF
-      
-      cat > "$output_dir/d3.tasks.md" <<'CMD_EOF'
-# /d3.tasks - Generate Executable Tasks
-
-Generate actionable task list from the implementation plan.
-
-**Usage:** `/d3.tasks <feature-directory>`
-
-**Output:** Creates `d3-features/[feature-name]/tasks.md`
-
-**Purpose:** Break down the plan into executable, parallelizable tasks.
-CMD_EOF
-      
-      cat > "$output_dir/d3.implement.md" <<'CMD_EOF'
-# /d3.implement - Execute Implementation
-
-Execute all tasks to build the feature according to the plan.
-
-**Usage:** `/d3.implement <feature-directory>`
-
-**Output:** Implements the feature based on the task list
-
-**Purpose:** Execute the implementation following the specified plan and tasks.
-CMD_EOF
-      
-      cat > "$output_dir/d3.clarify.md" <<'CMD_EOF'
-# /d3.clarify - Clarify Requirements
-
-Ask structured questions to clarify underspecified areas before planning.
-
-**Usage:** `/d3.clarify <feature-directory>`
-
-**Output:** Updates `d3-features/[feature-name]/spec.md`
-
-**Purpose:** De-risk ambiguous areas before investing in implementation.
-CMD_EOF
-      
-      cat > "$output_dir/d3.analyze.md" <<'CMD_EOF'
-# /d3.analyze - Cross-artifact Analysis
-
-Analyze consistency and coverage across specification, plan, and tasks.
-
-**Usage:** `/d3.analyze <feature-directory>`
-
-**Output:** Creates `d3-features/[feature-name]/analysis.md`
-
-**Purpose:** Validate that your specification and plan are complete and aligned.
-CMD_EOF
-      
-      cat > "$output_dir/d3.checklist.md" <<'CMD_EOF'
-# /d3.checklist - Generate Quality Checklist
-
-Generate custom quality checklists for validating requirements.
-
-**Usage:** `/d3.checklist <feature-directory>`
-
-**Output:** Creates `d3-features/[feature-name]/checklist.md`
-
-**Purpose:** Create quality gates and validation criteria for the feature.
-CMD_EOF
-      
-      cat > "$output_dir/d3.constitution.md" <<'CMD_EOF'
-# /d3.constitution - Project Principles
-
-Create or update project governing principles and development guidelines.
-
-**Usage:** `/d3.constitution`
-
-**Output:** Creates or updates `d3-constitution.md`
-
-**Purpose:** Establish project principles that guide all development decisions.
-CMD_EOF
-      ;;
-  esac
+  for template in D3-templates/d3-commands/d3.*.md; do
+    [[ -f "$template" ]] || continue
+    local name description script_command agent_script_command body
+    name=$(basename "$template" .md)
+    # Strip the "d3." prefix since we'll add it back in the output filename
+    name="${name#d3.}"
+    
+    # Normalize line endings
+    file_content=$(tr -d '\r' < "$template")
+    
+    # Extract description and script command from YAML frontmatter
+    description=$(printf '%s\n' "$file_content" | awk '/^description:/ {sub(/^description:[[:space:]]*/, ""); print; exit}')
+    script_command=$(printf '%s\n' "$file_content" | awk -v sv="$script_variant" '/^[[:space:]]*'"$script_variant"':[[:space:]]*/ {sub(/^[[:space:]]*'"$script_variant"':[[:space:]]*/, ""); print; exit}')
+    
+    if [[ -z $script_command ]]; then
+      echo "Warning: no script command found for $script_variant in $template" >&2
+      script_command="(Missing script command for $script_variant)"
+    fi
+    
+    # Extract agent_script command from YAML frontmatter if present
+    agent_script_command=$(printf '%s\n' "$file_content" | awk '
+      /^agent_scripts:$/ { in_agent_scripts=1; next }
+      in_agent_scripts && /^[[:space:]]*'"$script_variant"':[[:space:]]*/ {
+        sub(/^[[:space:]]*'"$script_variant"':[[:space:]]*/, "")
+        print
+        exit
+      }
+      in_agent_scripts && /^[a-zA-Z]/ { in_agent_scripts=0 }
+    ')
+    
+    # Replace {SCRIPT} placeholder with the script command
+    body=$(printf '%s\n' "$file_content" | sed "s|{SCRIPT}|${script_command}|g")
+    
+    # Replace {AGENT_SCRIPT} placeholder with the agent script command if found
+    if [[ -n $agent_script_command ]]; then
+      body=$(printf '%s\n' "$body" | sed "s|{AGENT_SCRIPT}|${agent_script_command}|g")
+    fi
+    
+    # Remove the scripts: and agent_scripts: sections from frontmatter while preserving YAML structure
+    body=$(printf '%s\n' "$body" | awk '
+      /^---$/ { print; if (++dash_count == 1) in_frontmatter=1; else in_frontmatter=0; next }
+      in_frontmatter && /^scripts:$/ { skip_scripts=1; next }
+      in_frontmatter && /^agent_scripts:$/ { skip_scripts=1; next }
+      in_frontmatter && /^[a-zA-Z].*:/ && skip_scripts { skip_scripts=0 }
+      in_frontmatter && skip_scripts && /^[[:space:]]/ { next }
+      { print }
+    ')
+    
+    # Apply other substitutions
+    body=$(printf '%s\n' "$body" | sed "s/{ARGS}/$arg_format/g" | sed "s/__AGENT__/$agent_prefix/g" | rewrite_paths)
+    
+    case $ext in
+      toml)
+        body=$(printf '%s\n' "$body" | sed 's/\\/\\\\/g')
+        { echo "description = \"$description\""; echo; echo "prompt = \"\"\""; echo "$body"; echo "\"\"\""; } > "$output_dir/d3.$name.$ext" ;;
+      md)
+        echo "$body" > "$output_dir/d3.$name.$ext" ;;
+    esac
+  done
 }
 
 build_variant() {
@@ -327,7 +192,16 @@ CONFIG_EOF
   esac
   
   if [[ -n "$AGENT_COMMANDS_DIR" ]]; then
-    generate_agent_commands "$agent" "$AGENT_COMMANDS_DIR"
+    case $agent in
+      gemini)
+        generate_commands d3 toml "{{args}}" "$AGENT_COMMANDS_DIR" "$script"
+        [[ -f agent_templates/gemini/GEMINI.md ]] && cp agent_templates/gemini/GEMINI.md "$base_dir/GEMINI.md" ;;
+      qwen)
+        generate_commands d3 toml "{{args}}" "$AGENT_COMMANDS_DIR" "$script"
+        [[ -f agent_templates/qwen/QWEN.md ]] && cp agent_templates/qwen/QWEN.md "$base_dir/QWEN.md" ;;
+      *)
+        generate_commands d3 md "\$ARGUMENTS" "$AGENT_COMMANDS_DIR" "$script" ;;
+    esac
     echo "Generated agent-specific commands for $agent"
   fi
 
