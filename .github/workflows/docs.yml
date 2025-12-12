@@ -23,9 +23,7 @@ jobs:
         python -m pip install mkdocs-material
     
     - name: Build documentation
-      run: |
-        cd docs
-        mkdocs build
+      run: mkdocs build
     
     - name: Deploy to GitHub Pages
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
