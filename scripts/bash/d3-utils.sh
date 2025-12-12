@@ -11,9 +11,12 @@ NC='\033[0m' # No Color
 
 # Get the repo root directory
 get_repo_root() {
-  local current_dir="$(pwd)"
+  # Start from script's directory first, then walk up
+  local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  local current_dir="$script_dir"
+  
   while [[ "$current_dir" != "/" ]]; do
-    if [[ -d "$current_dir/.git" ]] || [[ -f "$current_dir/D3-Kit-Methodology.md" ]]; then
+    if [[ -d "$current_dir/.git" ]] || [[ -d "$current_dir/.d3" ]] || [[ -f "$current_dir/D3-Kit-Methodology.md" ]]; then
       echo "$current_dir"
       return 0
     fi

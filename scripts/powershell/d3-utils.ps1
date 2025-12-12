@@ -4,9 +4,15 @@ $ErrorActionPreference = "Stop"
 
 # Get the repo root directory
 function Get-RepoRoot {
-    $currentDir = Get-Location
+    # Start from script's directory first, then walk up
+    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $currentDir = if ($scriptDir) { $scriptDir } else { Get-Location }
+    
+    # Walk up to find .git, .d3, or D3-Kit-Methodology.md
     while ($currentDir -ne [System.IO.Path]::GetPathRoot($currentDir)) {
-        if ((Test-Path (Join-Path $currentDir ".git")) -or (Test-Path (Join-Path $currentDir "D3-Kit-Methodology.md"))) {
+        if ((Test-Path (Join-Path $currentDir ".git")) -or `
+            (Test-Path (Join-Path $currentDir ".d3")) -or `
+            (Test-Path (Join-Path $currentDir "D3-Kit-Methodology.md"))) {
             return $currentDir
         }
         $currentDir = Split-Path $currentDir -Parent
