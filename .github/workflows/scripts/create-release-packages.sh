@@ -27,10 +27,71 @@ generate_agent_commands() {
   local agent=$1 output_dir=$2
   mkdir -p "$output_dir"
   
-  # Create agent-specific command files that agents can use
-  # These will be placed in agent-specific folders for the agent to discover
-  
-  cat > "$output_dir/d3.intend.md" <<'CMD_EOF'
+  # Determine if this agent uses TOML or Markdown
+  case $agent in
+    gemini|qwen)
+      # Generate TOML format for these agents
+      cat > "$output_dir/d3.toml" <<'CMD_EOF'
+[commands.d3_intend]
+name = "/d3.intend"
+description = "Specify Feature with Intent"
+help = "Capture the developer's intent and create a specification for a new feature."
+usage = "/d3.intend <feature-description>"
+output = "Creates d3-features/[feature-name]/spec.md"
+
+[commands.d3_plan]
+name = "/d3.plan"
+description = "Create Implementation Plan"
+help = "Create a technical implementation plan from the specification."
+usage = "/d3.plan <feature-directory>"
+output = "Creates d3-features/[feature-name]/plan.md"
+
+[commands.d3_tasks]
+name = "/d3.tasks"
+description = "Generate Executable Tasks"
+help = "Generate actionable task list from the implementation plan."
+usage = "/d3.tasks <feature-directory>"
+output = "Creates d3-features/[feature-name]/tasks.md"
+
+[commands.d3_implement]
+name = "/d3.implement"
+description = "Execute Implementation"
+help = "Execute all tasks to build the feature according to the plan."
+usage = "/d3.implement <feature-directory>"
+output = "Implements the feature based on the task list"
+
+[commands.d3_clarify]
+name = "/d3.clarify"
+description = "Clarify Requirements"
+help = "Ask structured questions to clarify underspecified areas before planning."
+usage = "/d3.clarify <feature-directory>"
+output = "Updates d3-features/[feature-name]/spec.md"
+
+[commands.d3_analyze]
+name = "/d3.analyze"
+description = "Cross-artifact Analysis"
+help = "Analyze consistency and coverage across specification, plan, and tasks."
+usage = "/d3.analyze <feature-directory>"
+output = "Creates d3-features/[feature-name]/analysis.md"
+
+[commands.d3_checklist]
+name = "/d3.checklist"
+description = "Generate Quality Checklist"
+help = "Generate custom quality checklists for validating requirements."
+usage = "/d3.checklist <feature-directory>"
+output = "Creates d3-features/[feature-name]/checklist.md"
+
+[commands.d3_constitution]
+name = "/d3.constitution"
+description = "Project Principles"
+help = "Create or update project governing principles and development guidelines."
+usage = "/d3.constitution"
+output = "Creates or updates d3-constitution.md"
+CMD_EOF
+      ;;
+    *)
+      # Generate Markdown format for all other agents
+      cat > "$output_dir/d3.intend.md" <<'CMD_EOF'
 # /d3.intend - Specify Feature with Intent
 
 Capture the developer's intent and create a specification for a new feature.
@@ -41,8 +102,8 @@ Capture the developer's intent and create a specification for a new feature.
 
 **Purpose:** Define what you want to build (the problem you're solving), who it's for, and why it matters.
 CMD_EOF
-  
-  cat > "$output_dir/d3.plan.md" <<'CMD_EOF'
+      
+      cat > "$output_dir/d3.plan.md" <<'CMD_EOF'
 # /d3.plan - Create Implementation Plan
 
 Create a technical implementation plan from the specification.
@@ -53,8 +114,8 @@ Create a technical implementation plan from the specification.
 
 **Purpose:** Map user stories to technical tasks with your chosen tech stack and architecture.
 CMD_EOF
-  
-  cat > "$output_dir/d3.tasks.md" <<'CMD_EOF'
+      
+      cat > "$output_dir/d3.tasks.md" <<'CMD_EOF'
 # /d3.tasks - Generate Executable Tasks
 
 Generate actionable task list from the implementation plan.
@@ -65,8 +126,8 @@ Generate actionable task list from the implementation plan.
 
 **Purpose:** Break down the plan into executable, parallelizable tasks.
 CMD_EOF
-  
-  cat > "$output_dir/d3.implement.md" <<'CMD_EOF'
+      
+      cat > "$output_dir/d3.implement.md" <<'CMD_EOF'
 # /d3.implement - Execute Implementation
 
 Execute all tasks to build the feature according to the plan.
@@ -77,8 +138,8 @@ Execute all tasks to build the feature according to the plan.
 
 **Purpose:** Execute the implementation following the specified plan and tasks.
 CMD_EOF
-  
-  cat > "$output_dir/d3.clarify.md" <<'CMD_EOF'
+      
+      cat > "$output_dir/d3.clarify.md" <<'CMD_EOF'
 # /d3.clarify - Clarify Requirements
 
 Ask structured questions to clarify underspecified areas before planning.
@@ -89,8 +150,8 @@ Ask structured questions to clarify underspecified areas before planning.
 
 **Purpose:** De-risk ambiguous areas before investing in implementation.
 CMD_EOF
-  
-  cat > "$output_dir/d3.analyze.md" <<'CMD_EOF'
+      
+      cat > "$output_dir/d3.analyze.md" <<'CMD_EOF'
 # /d3.analyze - Cross-artifact Analysis
 
 Analyze consistency and coverage across specification, plan, and tasks.
@@ -101,8 +162,8 @@ Analyze consistency and coverage across specification, plan, and tasks.
 
 **Purpose:** Validate that your specification and plan are complete and aligned.
 CMD_EOF
-  
-  cat > "$output_dir/d3.checklist.md" <<'CMD_EOF'
+      
+      cat > "$output_dir/d3.checklist.md" <<'CMD_EOF'
 # /d3.checklist - Generate Quality Checklist
 
 Generate custom quality checklists for validating requirements.
@@ -113,8 +174,8 @@ Generate custom quality checklists for validating requirements.
 
 **Purpose:** Create quality gates and validation criteria for the feature.
 CMD_EOF
-  
-  cat > "$output_dir/d3.constitution.md" <<'CMD_EOF'
+      
+      cat > "$output_dir/d3.constitution.md" <<'CMD_EOF'
 # /d3.constitution - Project Principles
 
 Create or update project governing principles and development guidelines.
@@ -125,6 +186,8 @@ Create or update project governing principles and development guidelines.
 
 **Purpose:** Establish project principles that guide all development decisions.
 CMD_EOF
+      ;;
+  esac
 }
 
 build_variant() {
@@ -191,19 +254,19 @@ CONFIG_EOF
       AGENT_COMMANDS_DIR="$base_dir/.qwen/commands"
       ;;
     opencode)
-      AGENT_COMMANDS_DIR="$base_dir/.opencode/commands"
+      AGENT_COMMANDS_DIR="$base_dir/.opencode/command"
       ;;
     windsurf)
       AGENT_COMMANDS_DIR="$base_dir/.windsurf/workflows"
       ;;
     kilocode)
-      AGENT_COMMANDS_DIR="$base_dir/.kilocode/workflows"
+      AGENT_COMMANDS_DIR="$base_dir/.kilocode/rules"
       ;;
     auggie)
-      AGENT_COMMANDS_DIR="$base_dir/.augment/commands"
+      AGENT_COMMANDS_DIR="$base_dir/.augment/rules"
       ;;
     roo)
-      AGENT_COMMANDS_DIR="$base_dir/.roo/commands"
+      AGENT_COMMANDS_DIR="$base_dir/.roo/rules"
       ;;
     codebuddy)
       AGENT_COMMANDS_DIR="$base_dir/.codebuddy/commands"
@@ -219,6 +282,9 @@ CONFIG_EOF
       ;;
     q)
       AGENT_COMMANDS_DIR="$base_dir/.amazonq/prompts"
+      ;;
+    codex)
+      AGENT_COMMANDS_DIR="$base_dir/.codex/commands"
       ;;
   esac
   
@@ -249,7 +315,7 @@ CONFIG_EOF
 }
 
 # Agent list
-ALL_AGENTS=(amp auggie bob claude copilot cursor-agent gemini kilocode opencode q qoder qwen roo shai windsurf)
+ALL_AGENTS=(amp auggie bob claude codex copilot cursor-agent gemini kilocode opencode q qoder qwen roo shai windsurf)
 ALL_SCRIPTS=(sh ps)
 
 echo "Agents: ${ALL_AGENTS[*]}"
