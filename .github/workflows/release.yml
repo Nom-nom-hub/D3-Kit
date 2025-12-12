@@ -2,44 +2,42 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ master ]
+    paths:
+      - 'D3-templates/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - 'pyproject.toml'
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: '3.11'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Setup Python
-      uses: actions/setup-python@v5
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        fetch-depth: 0
     
-    - name: Install dependencies
+    - name: Get next version
+      id: get_tag
       run: |
-        python -m pip install --upgrade pip build twine
+        chmod +x .github/workflows/scripts/get-next-version.sh
+        .github/workflows/scripts/get-next-version.sh
     
-    - name: Build package
-      run: python -m build
-    
-    - name: Generate template variants
+    - name: Create release packages
       run: |
-        python -m pip install pyyaml
-        python .github/workflows/scripts/generate-templates.py
+        chmod +x .github/workflows/scripts/create-release-packages.sh
+        .github/workflows/scripts/create-release-packages.sh ${{ steps.get_tag.outputs.new_version }}
     
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: |
-          dist/*
-          templates-dist/*
-        draft: false
-        prerelease: false
-        generate_release_notes: true
+      run: |
+        chmod +x .github/workflows/scripts/create-github-release.sh
+        .github/workflows/scripts/create-github-release.sh ${{ steps.get_tag.outputs.new_version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

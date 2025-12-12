@@ -1,30 +1,24 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-set -e
+# get-next-version.sh
+# Calculate the next version based on the latest git tag and output GitHub Actions variables
+# Usage: get-next-version.sh
 
-# Determine the next version based on conventional commits
-# Usage: ./get-next-version.sh [current_version]
+# Get the latest tag, or use v0.0.0 if no tags exist
+LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
 
-CURRENT_VERSION="${1:-$(python -c 'import d3_kit; print(d3_kit.__version__)' 2>/dev/null || echo '1.0.0')}"
+# Extract version number and increment
+VERSION=$(echo $LATEST_TAG | sed 's/v//')
+IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
+MAJOR=${VERSION_PARTS[0]:-0}
+MINOR=${VERSION_PARTS[1]:-0}
+PATCH=${VERSION_PARTS[2]:-0}
 
-# Extract the version numbers
-IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+# Increment patch version
+PATCH=$((PATCH + 1))
+NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
 
-# Default to patch increment
-NEXT_PATCH=$((PATCH + 1))
-NEXT_MINOR=$MINOR
-NEXT_MAJOR=$MAJOR
-
-# Check git logs for conventional commit types that would indicate version bumps
-if git log --oneline -10 --grep="^feat(\|^feat:" --exit-code >/dev/null 2>&1; then
-    # Major feature found, increment minor (following semver - features could break compatibility)
-    NEXT_MINOR=$((MINOR + 1))
-    NEXT_PATCH=0
-elif git log --oneline -10 --grep="^BREAKING CHANGE\|^BREAKING-CHANGE:" --exit-code >/dev/null 2>&1; then
-    # Breaking change found, increment major
-    NEXT_MAJOR=$((MAJOR + 1))
-    NEXT_MINOR=0
-    NEXT_PATCH=0
-fi
-
-echo "${NEXT_MAJOR}.${NEXT_MINOR}.${NEXT_PATCH}"
+echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+echo "New version will be: $NEW_VERSION"
