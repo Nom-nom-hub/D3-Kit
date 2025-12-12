@@ -61,7 +61,7 @@ class StepTracker:
 
     def __init__(self, title: str):
         self.title = title
-        self.steps = []
+        self.steps: list[dict[str, str]] = []
 
     def add(self, key: str, label: str):
         if key not in [s["key"] for s in self.steps]:
@@ -194,7 +194,7 @@ def download_and_extract_template(
     project_path: Path,
     agent: str,
     script_type: str,
-    tracker: StepTracker = None,
+    tracker: Optional[StepTracker] = None,
     is_current_dir: bool = False,
 ) -> bool:
     """Download and extract the D3-Kit template from GitHub releases."""
@@ -252,7 +252,7 @@ def download_and_extract_template(
 
 @app.command()
 def init(
-    project_name: str = typer.Argument(
+    project_name: Optional[str] = typer.Argument(
         None, help="Name for your new project directory"
     ),
     ai_assistant: str = typer.Option(
