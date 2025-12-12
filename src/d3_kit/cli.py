@@ -3,6 +3,9 @@
 import typer
 from pathlib import Path
 import shutil
+import subprocess
+import sys
+import httpx
 from rich.console import Console
 from rich.panel import Panel
 
@@ -11,148 +14,98 @@ console = Console()
 app = typer.Typer()
 
 
+def get_latest_release_version() -> str:
+    """Get the latest D3-Kit release version from GitHub."""
+    try:
+        with httpx.Client() as client:
+            response = client.get(
+                "https://api.github.com/repos/Nom-nom-hub/D3-Kit/releases/latest",
+                timeout=10.0,
+            )
+            response.raise_for_status()
+            return response.json()["tag_name"]
+    except Exception as e:
+        console.print(f"[yellow]Warning:[/yellow] Could not fetch latest release: {e}")
+        return "v1.0.3"
+
+
+def download_and_extract_template(
+    project_path: Path, agent: str, script_type: str
+) -> bool:
+    """Download and extract the D3-Kit template from GitHub releases."""
+    version = get_latest_release_version()
+    zip_filename = f"d3-kit-template-{agent}-{script_type}-{version}.zip"
+    url = f"https://github.com/Nom-nom-hub/D3-Kit/releases/download/{version}/{zip_filename}"
+
+    try:
+        console.print(f"[cyan]Downloading template from GitHub...[/cyan]")
+        with httpx.stream("GET", url, timeout=30.0) as response:
+            response.raise_for_status()
+            zip_path = project_path.parent / zip_filename
+            with open(zip_path, "wb") as f:
+                for chunk in response.iter_bytes():
+                    f.write(chunk)
+
+        console.print(f"[cyan]Extracting template...[/cyan]")
+        shutil.unpack_archive(str(zip_path), str(project_path))
+        zip_path.unlink()  # Delete the ZIP after extraction
+        return True
+    except Exception as e:
+        console.print(f"[red]Error downloading template:[/red] {e}")
+        return False
+
+
 @app.command()
 def init(
-    project_name: str = typer.Argument(..., help="Name for your new project directory"),
-    ai_assistant: str = typer.Option(None, "--ai", help="AI assistant to use"),
+    project_name: str = typer.Argument(
+        ..., help="Name for your new project directory"
+    ),
+    ai_assistant: str = typer.Option(
+        None, "--ai", help="AI assistant to use (amp, claude, cursor-agent, etc.)"
+    ),
     script_variant: str = typer.Option(
-        "sh", "--script", help="Script variant to use: sh (bash/zsh) or ps (PowerShell)"
+        None, "--script", help="Script variant to use: sh (bash/zsh) or ps (PowerShell)"
     ),
 ):
     """
     Initialize a new D3-Kit project from the latest template
     """
-    console.print(
-        f"\n[dark_cyan]Initializing D3-Kit project: {project_name}[/dark_cyan]"
-    )
+    console.print(f"\n[dark_cyan]Initializing D3-Kit project: {project_name}[/dark_cyan]")
 
-    # Create directory structure
+    # Create project directory
     project_path = Path(project_name)
-    project_path.mkdir(exist_ok=True)
+    if project_path.exists():
+        console.print(f"[red]Error:[/red] Directory '{project_name}' already exists")
+        raise typer.Exit(1)
 
-    # Create .d3 directory for D3-Kit configuration
-    d3_dir = project_path / ".d3"
-    d3_dir.mkdir(exist_ok=True)
+    project_path.mkdir(parents=True)
 
-    # Create scripts directory structure
-    scripts_dir = project_path / "scripts"
-    bash_dir = scripts_dir / "bash"
-    powershell_dir = scripts_dir / "powershell"
+    # Determine script type
+    if script_variant is None:
+        script_type = "ps" if sys.platform == "win32" else "sh"
+    else:
+        script_type = script_variant
 
-    bash_dir.mkdir(parents=True, exist_ok=True)
-    powershell_dir.mkdir(parents=True, exist_ok=True)
+    # Determine AI assistant (use provided or prompt)
+    if ai_assistant is None:
+        ai_assistant = "claude"  # Default to Claude
 
-    # Try to copy our local scripts to the project
-    local_bash_dir = Path(__file__).parent.parent.parent / "scripts" / "bash"
-    local_powershell_dir = (
-        Path(__file__).parent.parent.parent / "scripts" / "powershell"
-    )
-
-    if local_bash_dir.exists():
-        for script_file in local_bash_dir.glob("*.sh"):
-            dest_file = bash_dir / script_file.name
-            shutil.copy2(script_file, dest_file)
-
-    if local_powershell_dir.exists():
-        for script_file in local_powershell_dir.glob("*.ps1"):
-            dest_file = powershell_dir / script_file.name
-            shutil.copy2(script_file, dest_file)
-
-    # Create basic configuration
-    config_content = f"""# D3-Kit Configuration
-# This file configures the D3-Kit development environment for {ai_assistant}
-
-[project]
-name = "{project_name}"
-assistant = "{ai_assistant}"
-features_dir = "d3-features"
-contracts_dir = "contracts"
-
-[directories]
-features = "d3-features"
-contracts = "contracts"
-templates = "D3-templates"
-scripts = "scripts"
-
-[commands]
-intend = "D3-templates/d3-commands/d3.intend.md"
-plan = "D3-templates/d3-commands/d3.plan.md"
-tasks = "D3-templates/d3-commands/d3.tasks.md"
-specify = "D3-templates/d3-commands/d3.intend.md"
-implement = "D3-templates/d3-commands/d3.implement.md"
-clarify = "D3-templates/d3-commands/d3.clarify.md"
-analyze = "D3-templates/d3-commands/d3.analyze.md"
-checklist = "D3-templates/d3-commands/d3.checklist.md"
-constitution = "D3-templates/d3-commands/d3.constitution.md"
-research = "D3-templates/d3-commands/d3.research.md"
-data = "D3-templates/d3-commands/d3.data.md"
-contracts = "D3-templates/d3-commands/d3.contracts.md"
-quickstart = "D3-templates/d3-commands/d3.quickstart.md"
-"""
-
-    (d3_dir / "config.toml").write_text(config_content)
-
-    # Create directory structure
-    (project_path / "d3-features").mkdir(exist_ok=True)
-    (project_path / "contracts").mkdir(exist_ok=True)
-
-    # Copy templates
-    templates_dir = project_path / "D3-templates"
-    templates_dir.mkdir(exist_ok=True)
-
-    commands_dir = templates_dir / "d3-commands"
-    commands_dir.mkdir(exist_ok=True)
-
-    # Copy all command templates with actual content
-    import importlib.resources
-    import d3_kit
-
-    template_files = [
-        "d3.intend.md",
-        "d3.plan.md",
-        "d3.tasks.md",
-        "d3.implement.md",
-        "d3.clarify.md",
-        "d3.analyze.md",
-        "d3.checklist.md",
-        "d3.constitution.md",
-        "d3.research.md",
-        "d3.data.md",
-        "d3.contracts.md",
-        "d3.quickstart.md",
-        "d3.taskstoissues.md",
-    ]
-
-    for template_file in template_files:
-        try:
-            # Try to read from package resources first
-            if importlib.resources.is_resource(
-                d3_kit, f"D3-templates/d3-commands/{template_file}"
-            ):
-                content = importlib.resources.read_text(
-                    d3_kit, f"D3-templates/d3-commands/{template_file}"
-                )
-                (commands_dir / template_file).write_text(content)
-            else:
-                # Create empty file if template not found
-                (commands_dir / template_file).write_text("")
-        except:
-            # Create empty file if template not found
-            (commands_dir / template_file).write_text("")
+    # Download and extract template
+    if not download_and_extract_template(project_path, ai_assistant, script_type):
+        shutil.rmtree(project_path)
+        raise typer.Exit(1)
 
     console.print(f"[green][OK][/green] Project structure created at {project_path}")
-    console.print(f"[green][OK][/green] D3-Kit configuration created")
-    console.print(f"[green][OK][/green] Command templates installed")
+    console.print(f"[green][OK][/green] D3-Kit configuration initialized")
     console.print(
-        f"[green][OK][/green] Scripts directory created with {len(list(bash_dir.glob('*.sh')))} bash and {len(list(powershell_dir.glob('*.ps1')))} PowerShell scripts"
+        f"[green][OK][/green] Templates and scripts installed for {ai_assistant}"
     )
 
     # Show next steps
     console.print("\n[cyan]Getting Started:[/cyan]")
     console.print(f"1. cd {project_name}")
-    console.print(f"2. Launch your {ai_assistant} agent")
+    console.print(f"2. Launch your {ai_assistant} agent in this directory")
     console.print(f"3. Use D3 commands: /d3.intend, /d3.plan, /d3.tasks, etc.")
-    console.print(f"4. Use helper scripts in ./scripts/ directory")
 
 
 @app.command()
