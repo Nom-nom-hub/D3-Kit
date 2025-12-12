@@ -1,0 +1,55 @@
+[commands.d3_intend]
+name = "/d3.intend"
+description = "Specify Feature with Intent"
+help = "Capture the developer's intent and create a specification for a new feature."
+usage = "/d3.intend <feature-description>"
+output = "Creates d3-features/[feature-name]/spec.md"
+
+[commands.d3_plan]
+name = "/d3.plan"
+description = "Create Implementation Plan"
+help = "Create a technical implementation plan from the specification."
+usage = "/d3.plan <feature-directory>"
+output = "Creates d3-features/[feature-name]/plan.md"
+
+[commands.d3_tasks]
+name = "/d3.tasks"
+description = "Generate Executable Tasks"
+help = "Generate actionable task list from the implementation plan."
+usage = "/d3.tasks <feature-directory>"
+output = "Creates d3-features/[feature-name]/tasks.md"
+
+[commands.d3_implement]
+name = "/d3.implement"
+description = "Execute Implementation"
+help = "Execute all tasks to build the feature according to the plan."
+usage = "/d3.implement <feature-directory>"
+output = "Implements the feature based on the task list"
+
+[commands.d3_clarify]
+name = "/d3.clarify"
+description = "Clarify Requirements"
+help = "Ask structured questions to clarify underspecified areas before planning."
+usage = "/d3.clarify <feature-directory>"
+output = "Updates d3-features/[feature-name]/spec.md"
+
+[commands.d3_analyze]
+name = "/d3.analyze"
+description = "Cross-artifact Analysis"
+help = "Analyze consistency and coverage across specification, plan, and tasks."
+usage = "/d3.analyze <feature-directory>"
+output = "Creates d3-features/[feature-name]/analysis.md"
+
+[commands.d3_checklist]
+name = "/d3.checklist"
+description = "Generate Quality Checklist"
+help = "Generate custom quality checklists for validating requirements."
+usage = "/d3.checklist <feature-directory>"
+output = "Creates d3-features/[feature-name]/checklist.md"
+
+[commands.d3_constitution]
+name = "/d3.constitution"
+description = "Project Principles"
+help = "Create or update project governing principles and development guidelines."
+usage = "/d3.constitution"
+output = "Creates or updates d3-constitution.md"
