@@ -139,36 +139,36 @@ build_variant() {
 
   # Create config.toml for this agent
   cat > "$D3_DIR/config.toml" <<EOF
-# D3-Kit Configuration
-# This file configures the D3-Kit development environment for $agent
+  # D3-Kit Configuration
+  # This file configures the D3-Kit development environment for $agent
 
-[project]
-name = "my-d3-project"
-assistant = "$agent"
-features_dir = "d3-features"
-contracts_dir = "contracts"
+  [project]
+  name = "my-d3-project"
+  assistant = "$agent"
+  features_dir = "d3-features"
+  contracts_dir = "contracts"
 
-[directories]
-features = "d3-features"
-contracts = "contracts"
-templates = "D3-templates"
-scripts = "scripts"
+  [directories]
+  features = "d3-features"
+  contracts = "contracts"
+  templates = ".d3/D3-templates"
+  scripts = ".d3/scripts"
 
-[commands]
-intend = "D3-templates/d3-commands/d3.intend.md"
-plan = "D3-templates/d3-commands/d3.plan.md"
-tasks = "D3-templates/d3-commands/d3.tasks.md"
-specify = "D3-templates/d3-commands/d3.intend.md"
-implement = "D3-templates/d3-commands/d3.implement.md"
-clarify = "D3-templates/d3-commands/d3.clarify.md"
-analyze = "D3-templates/d3-commands/d3.analyze.md"
-checklist = "D3-templates/d3-commands/d3.checklist.md"
-constitution = "D3-templates/d3-commands/d3.constitution.md"
-research = "D3-templates/d3-commands/d3.research.md"
-data = "D3-templates/d3-commands/d3.data.md"
-contracts = "D3-templates/d3-commands/d3.contracts.md"
-quickstart = "D3-templates/d3-commands/d3.quickstart.md"
-EOF
+  [commands]
+  intend = ".d3/D3-templates/d3-commands/d3.intend.md"
+  plan = ".d3/D3-templates/d3-commands/d3.plan.md"
+  tasks = ".d3/D3-templates/d3-commands/d3.tasks.md"
+  specify = ".d3/D3-templates/d3-commands/d3.intend.md"
+  implement = ".d3/D3-templates/d3-commands/d3.implement.md"
+  clarify = ".d3/D3-templates/d3-commands/d3.clarify.md"
+  analyze = ".d3/D3-templates/d3-commands/d3.analyze.md"
+  checklist = ".d3/D3-templates/d3-commands/d3.checklist.md"
+  constitution = ".d3/D3-templates/d3-commands/d3.constitution.md"
+  research = ".d3/D3-templates/d3-commands/d3.research.md"
+  data = ".d3/D3-templates/d3-commands/d3.data.md"
+  contracts = ".d3/D3-templates/d3-commands/d3.contracts.md"
+  quickstart = ".d3/D3-templates/d3-commands/d3.quickstart.md"
+  EOF
 
   # Create agent-specific command files in the agent folder
    AGENT_COMMANDS_DIR=""
