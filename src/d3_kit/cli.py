@@ -140,11 +140,11 @@ quickstart = "D3-templates/d3-commands/d3.quickstart.md"
             # Create empty file if template not found
             (commands_dir / template_file).write_text("")
 
-    console.print(f"[green]✓[/green] Project structure created at {project_path}")
-    console.print(f"[green]✓[/green] D3-Kit configuration created")
-    console.print(f"[green]✓[/green] Command templates installed")
+    console.print(f"[green][OK][/green] Project structure created at {project_path}")
+    console.print(f"[green][OK][/green] D3-Kit configuration created")
+    console.print(f"[green][OK][/green] Command templates installed")
     console.print(
-        f"[green]✓[/green] Scripts directory created with {len(list(bash_dir.glob('*.sh')))} bash and {len(list(powershell_dir.glob('*.ps1')))} PowerShell scripts"
+        f"[green][OK][/green] Scripts directory created with {len(list(bash_dir.glob('*.sh')))} bash and {len(list(powershell_dir.glob('*.ps1')))} PowerShell scripts"
     )
 
     # Show next steps
