@@ -1,5 +1,6 @@
 site_name: D3-Kit
 site_description: Developer-Driven Development Framework
+docs_dir: docs
 theme:
   name: material
 nav:
