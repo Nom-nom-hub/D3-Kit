@@ -10,10 +10,13 @@
 - **Developer(s)**: {DEVELOPER_NAME}
 
 ## Developer Intent & User Scenarios
-- **Developer Intent**: [What are you trying to achieve technically with {FEATURE_NAME}?]
-- **Primary User Scenario**: [Main scenario that the feature addresses]
-- **Secondary User Scenarios**: [Additional use cases that the feature supports]
-- **Target Audience**: [Who will use this {FEATURE_NAME} feature?]
+
+**⚠️ AGENT: Fill in these sections below based on the description:**
+
+- **Developer Intent**: Based on "{DESCRIPTION}" - [What technical solution will you build to achieve this?]
+- **Primary User Scenario**: Based on "{DESCRIPTION}" - [How will users interact with this {FEATURE_NAME}?]
+- **Secondary User Scenarios**: [What other ways could users benefit from {FEATURE_NAME}?]
+- **Target Audience**: Based on "{DESCRIPTION}" - [Who is the intended user/audience?]
 
 ## Edge Cases & Clarifications
 - [ ] Edge case 1: [Description and expected behavior]
