@@ -33,3 +33,6 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 d3_kit = ["D3-templates/d3-commands/*", "D3-templates/*", "scripts/bash/*", "scripts/powershell/*"]
+
+[tool.mypy]
+ignore_missing_imports = true
