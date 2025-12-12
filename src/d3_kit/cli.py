@@ -6,7 +6,7 @@ import shutil
 from rich.console import Console
 from rich.panel import Panel
 
-console = Console()
+console = Console(force_terminal=True, force_unicode=True)
 
 app = typer.Typer()
 
