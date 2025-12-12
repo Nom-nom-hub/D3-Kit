@@ -25,7 +25,7 @@ function Out-JsonResponse {
     $response = @{
         status = $Status
         message = $Message
-        timestamp = (Get-Date -AsUTC -Format "yyyy-MM-ddTHH:mm:ssZ")
+        timestamp = ([datetime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))
         data = $Data
     }
     
