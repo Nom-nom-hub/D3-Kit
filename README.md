@@ -27,18 +27,26 @@ D3-Kit (Developer-Driven Development) is a methodology that inverts traditional 
 
 ### 1. Install D3-Kit
 
-The easiest way to install D3-Kit is using `uv` (a fast Python package installer):
+Install D3-Kit directly from GitHub using `uv`:
 
 ```bash
-uv tool install d3-kit
+uv tool install git+https://github.com/Nom-nom-hub/D3-Kit.git@latest
 ```
 
 This installs D3-Kit as a command-line tool globally, making the `d3` command available in your terminal.
 
-Alternatively, you can use `pipx`:
+Alternatively, with `pipx`:
 
 ```bash
-pipx install d3-kit
+pipx install git+https://github.com/Nom-nom-hub/D3-Kit.git@latest
+```
+
+Or clone and run locally:
+
+```bash
+git clone https://github.com/Nom-nom-hub/D3-Kit.git
+cd D3-Kit
+uv run d3 init <PROJECT_NAME>
 ```
 
 ### 2. Initialize D3-Kit Project
