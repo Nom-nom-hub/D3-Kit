@@ -101,24 +101,40 @@ Convert tasks.md into issue tracker format.
 ## File Structure
 
 ```
-d3-features/
-├── 1-feature-name/
-│   ├── spec.md              (Feature specification)
-│   ├── plan.md              (Implementation plan)
-│   ├── tasks.md             (Executable tasks)
-│   ├── data-model.md        (Data structures)
-│   ├── research.md          (Research findings)
-│   └── implementation-log.md (Progress tracking)
-├── 2-another-feature/
+project-root/
+├── .d3/                           (D3-Kit system files)
+│   ├── scripts/
+│   │   ├── bash/                  (Bash versions of D3 scripts)
+│   │   └── powershell/            (PowerShell versions of D3 scripts)
+│   └── D3-templates/              (Template files for D3 commands)
+│
+├── .qwen/                         (Qwen Code agent commands)
+│   └── commands/                  (Custom D3 commands for Qwen)
+│
+├── d3-features/                   (Feature specifications and plans)
+│   ├── 1-feature-name/
+│   │   ├── spec.md                (Feature specification)
+│   │   ├── plan.md                (Implementation plan)
+│   │   ├── tasks.md               (Executable tasks)
+│   │   ├── data-model.md          (Data structures)
+│   │   ├── research.md            (Research findings)
+│   │   └── implementation-log.md   (Progress tracking)
+│   ├── 2-another-feature/
+│   │   └── ...
 │   └── ...
-└── ...
-
-memory/
-├── d3-constitution.md       (Project principles)
-└── ...
-
-contracts/
-└── api.md                   (External contracts)
+│
+├── memory/                        (Project-wide documentation)
+│   └── d3-constitution.md         (Project principles)
+│
+├── contracts/                     (API/Service contracts)
+│   └── api.md
+│
+├── [Implementation files]/        (Actual source code, assets, etc.)
+│   ├── index.html
+│   ├── main.js
+│   ├── style.css
+│   └── ...
+└── README.md                      (Project README)
 ```
 
 ## How Scripts Work
