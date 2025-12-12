@@ -311,6 +311,7 @@ def init(
                     console.print("[yellow]Operation cancelled[/yellow]")
                     raise typer.Exit(0)
     else:
+        assert project_name is not None
         project_path = Path(project_name).resolve()
         if project_path.exists():
             error_panel = Panel(
