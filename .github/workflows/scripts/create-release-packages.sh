@@ -138,114 +138,113 @@ build_variant() {
   mkdir -p "$D3_DIR"
 
   # Create config.toml for this agent
-  cat > "$D3_DIR/config.toml" <<EOF
-  # D3-Kit Configuration
-  # This file configures the D3-Kit development environment for $agent
+  cat > "$D3_DIR/config.toml" <<'CONFIG_EOF'
+# D3-Kit Configuration
+# This file configures the D3-Kit development environment
 
-  [project]
-  name = "my-d3-project"
-  assistant = "$agent"
-  features_dir = "d3-features"
-  contracts_dir = "contracts"
+[project]
+name = "my-d3-project"
+features_dir = "d3-features"
+contracts_dir = "contracts"
 
-  [directories]
-  features = "d3-features"
-  contracts = "contracts"
-  templates = ".d3/D3-templates"
-  scripts = ".d3/scripts"
+[directories]
+features = "d3-features"
+contracts = "contracts"
+templates = ".d3/D3-templates"
+scripts = ".d3/scripts"
 
-  [commands]
-  intend = ".d3/D3-templates/d3-commands/d3.intend.md"
-  plan = ".d3/D3-templates/d3-commands/d3.plan.md"
-  tasks = ".d3/D3-templates/d3-commands/d3.tasks.md"
-  specify = ".d3/D3-templates/d3-commands/d3.intend.md"
-  implement = ".d3/D3-templates/d3-commands/d3.implement.md"
-  clarify = ".d3/D3-templates/d3-commands/d3.clarify.md"
-  analyze = ".d3/D3-templates/d3-commands/d3.analyze.md"
-  checklist = ".d3/D3-templates/d3-commands/d3.checklist.md"
-  constitution = ".d3/D3-templates/d3-commands/d3.constitution.md"
-  research = ".d3/D3-templates/d3-commands/d3.research.md"
-  data = ".d3/D3-templates/d3-commands/d3.data.md"
-  contracts = ".d3/D3-templates/d3-commands/d3.contracts.md"
-  quickstart = ".d3/D3-templates/d3-commands/d3.quickstart.md"
-  EOF
+[commands]
+intend = ".d3/D3-templates/d3-commands/d3.intend.md"
+plan = ".d3/D3-templates/d3-commands/d3.plan.md"
+tasks = ".d3/D3-templates/d3-commands/d3.tasks.md"
+specify = ".d3/D3-templates/d3-commands/d3.intend.md"
+implement = ".d3/D3-templates/d3-commands/d3.implement.md"
+clarify = ".d3/D3-templates/d3-commands/d3.clarify.md"
+analyze = ".d3/D3-templates/d3-commands/d3.analyze.md"
+checklist = ".d3/D3-templates/d3-commands/d3.checklist.md"
+constitution = ".d3/D3-templates/d3-commands/d3.constitution.md"
+research = ".d3/D3-templates/d3-commands/d3.research.md"
+data = ".d3/D3-templates/d3-commands/d3.data.md"
+contracts = ".d3/D3-templates/d3-commands/d3.contracts.md"
+quickstart = ".d3/D3-templates/d3-commands/d3.quickstart.md"
+CONFIG_EOF
 
   # Create agent-specific command files in the agent folder
-   AGENT_COMMANDS_DIR=""
-   case $agent in
-     claude)
-       AGENT_COMMANDS_DIR="$base_dir/.claude/commands"
-       ;;
-     amp)
-       AGENT_COMMANDS_DIR="$base_dir/.agents/commands"
-       ;;
-     copilot)
-       AGENT_COMMANDS_DIR="$base_dir/.github/agents"
-       ;;
-     cursor-agent)
-       AGENT_COMMANDS_DIR="$base_dir/.cursor/commands"
-       ;;
-     gemini)
-       AGENT_COMMANDS_DIR="$base_dir/.gemini/commands"
-       ;;
-     qwen)
-       AGENT_COMMANDS_DIR="$base_dir/.qwen/commands"
-       ;;
-     opencode)
-       AGENT_COMMANDS_DIR="$base_dir/.opencode/commands"
-       ;;
-     windsurf)
-       AGENT_COMMANDS_DIR="$base_dir/.windsurf/workflows"
-       ;;
-     kilocode)
-       AGENT_COMMANDS_DIR="$base_dir/.kilocode/workflows"
-       ;;
-     auggie)
-       AGENT_COMMANDS_DIR="$base_dir/.augment/commands"
-       ;;
-     roo)
-       AGENT_COMMANDS_DIR="$base_dir/.roo/commands"
-       ;;
-     codebuddy)
-       AGENT_COMMANDS_DIR="$base_dir/.codebuddy/commands"
-       ;;
-     qoder)
-       AGENT_COMMANDS_DIR="$base_dir/.qoder/commands"
-       ;;
-     shai)
-       AGENT_COMMANDS_DIR="$base_dir/.shai/commands"
-       ;;
-     bob)
-       AGENT_COMMANDS_DIR="$base_dir/.bob/commands"
-       ;;
-     q)
-       AGENT_COMMANDS_DIR="$base_dir/.amazonq/prompts"
-       ;;
-   esac
-   
-   if [[ -n "$AGENT_COMMANDS_DIR" ]]; then
-     generate_agent_commands "$agent" "$AGENT_COMMANDS_DIR"
-     echo "Generated agent-specific commands for $agent"
-   fi
+  AGENT_COMMANDS_DIR=""
+  case $agent in
+    claude)
+      AGENT_COMMANDS_DIR="$base_dir/.claude/commands"
+      ;;
+    amp)
+      AGENT_COMMANDS_DIR="$base_dir/.agents/commands"
+      ;;
+    copilot)
+      AGENT_COMMANDS_DIR="$base_dir/.github/agents"
+      ;;
+    cursor-agent)
+      AGENT_COMMANDS_DIR="$base_dir/.cursor/commands"
+      ;;
+    gemini)
+      AGENT_COMMANDS_DIR="$base_dir/.gemini/commands"
+      ;;
+    qwen)
+      AGENT_COMMANDS_DIR="$base_dir/.qwen/commands"
+      ;;
+    opencode)
+      AGENT_COMMANDS_DIR="$base_dir/.opencode/commands"
+      ;;
+    windsurf)
+      AGENT_COMMANDS_DIR="$base_dir/.windsurf/workflows"
+      ;;
+    kilocode)
+      AGENT_COMMANDS_DIR="$base_dir/.kilocode/workflows"
+      ;;
+    auggie)
+      AGENT_COMMANDS_DIR="$base_dir/.augment/commands"
+      ;;
+    roo)
+      AGENT_COMMANDS_DIR="$base_dir/.roo/commands"
+      ;;
+    codebuddy)
+      AGENT_COMMANDS_DIR="$base_dir/.codebuddy/commands"
+      ;;
+    qoder)
+      AGENT_COMMANDS_DIR="$base_dir/.qoder/commands"
+      ;;
+    shai)
+      AGENT_COMMANDS_DIR="$base_dir/.shai/commands"
+      ;;
+    bob)
+      AGENT_COMMANDS_DIR="$base_dir/.bob/commands"
+      ;;
+    q)
+      AGENT_COMMANDS_DIR="$base_dir/.amazonq/prompts"
+      ;;
+  esac
+  
+  if [[ -n "$AGENT_COMMANDS_DIR" ]]; then
+    generate_agent_commands "$agent" "$AGENT_COMMANDS_DIR"
+    echo "Generated agent-specific commands for $agent"
+  fi
 
-   # Copy D3 templates into .d3
-   [[ -d D3-templates ]] && { cp -r D3-templates "$D3_DIR/"; echo "Copied D3-templates"; }
+  # Copy D3 templates into .d3
+  [[ -d D3-templates ]] && { cp -r D3-templates "$D3_DIR/"; echo "Copied D3-templates"; }
 
-   # Create scripts directory inside .d3 with appropriate script type
-   mkdir -p "$D3_DIR/scripts"
-   case $script in
-     sh)
-       mkdir -p "$D3_DIR/scripts/bash"
-       echo "#!/bin/bash" > "$D3_DIR/scripts/bash/example.sh"
-       echo "# Add your bash scripts here" >> "$D3_DIR/scripts/bash/example.sh"
-       ;;
-     ps)
-       mkdir -p "$D3_DIR/scripts/powershell"
-       echo "# Add your PowerShell scripts here" > "$D3_DIR/scripts/powershell/example.ps1"
-       ;;
-   esac
+  # Create scripts directory inside .d3 with appropriate script type
+  mkdir -p "$D3_DIR/scripts"
+  case $script in
+    sh)
+      mkdir -p "$D3_DIR/scripts/bash"
+      echo "#!/bin/bash" > "$D3_DIR/scripts/bash/example.sh"
+      echo "# Add your bash scripts here" >> "$D3_DIR/scripts/bash/example.sh"
+      ;;
+    ps)
+      mkdir -p "$D3_DIR/scripts/powershell"
+      echo "# Add your PowerShell scripts here" > "$D3_DIR/scripts/powershell/example.ps1"
+      ;;
+  esac
 
-   ( cd "$base_dir" && zip -r "../d3-kit-template-${agent}-${script}-${NEW_VERSION}.zip" . )
+  ( cd "$base_dir" && zip -r "../d3-kit-template-${agent}-${script}-${NEW_VERSION}.zip" . )
   echo "Created $GENRELEASES_DIR/d3-kit-template-${agent}-${script}-${NEW_VERSION}.zip"
 }
 
