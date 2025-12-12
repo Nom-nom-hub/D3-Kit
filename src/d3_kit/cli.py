@@ -255,12 +255,12 @@ def init(
     project_name: Optional[str] = typer.Argument(
         None, help="Name for your new project directory"
     ),
-    ai_assistant: str = typer.Option(
+    ai_assistant: Optional[str] = typer.Option(
         None,
         "--ai",
         help="AI assistant to use (e.g. claude, amp, copilot, cursor-agent)",
     ),
-    script_variant: str = typer.Option(
+    script_variant: Optional[str] = typer.Option(
         None, "--script", help="Script variant to use: sh (bash/zsh) or ps (PowerShell)"
     ),
     force: bool = typer.Option(False, "--force", help="Force merge when using --here"),
@@ -329,7 +329,16 @@ def init(
 
     # Determine script type
     if script_variant is None:
-        script_type = "ps" if sys.platform == "win32" else "sh"
+        console.print()
+        console.print("[cyan]Select script type:[/cyan]")
+        script_choices = list(SCRIPT_TYPE_CHOICES.items())
+        for i, (key, desc) in enumerate(script_choices, 1):
+            console.print(f"  [bold]{i}[/bold]. {desc} ({key})")
+        choice = typer.prompt("Enter your choice", type=int, default=2 if sys.platform == "win32" else 1)
+        if choice < 1 or choice > len(script_choices):
+            console.print("[red]Invalid choice[/red]")
+            raise typer.Exit(1)
+        script_type = script_choices[choice - 1][0]
     else:
         if script_variant not in SCRIPT_TYPE_CHOICES:
             console.print(
@@ -340,7 +349,16 @@ def init(
 
     # Determine AI assistant
     if ai_assistant is None:
-        ai_assistant = "claude"  # Default to Claude
+        console.print()
+        console.print("[cyan]Select AI assistant:[/cyan]")
+        agent_list = list(AGENT_CONFIG.items())
+        for i, (key, config) in enumerate(agent_list, 1):
+            console.print(f"  [bold]{i}[/bold]. {config['name']} ({key})")
+        choice = typer.prompt("Enter your choice", type=int, default=1)
+        if choice < 1 or choice > len(agent_list):
+            console.print("[red]Invalid choice[/red]")
+            raise typer.Exit(1)
+        ai_assistant = agent_list[choice - 1][0]
     else:
         if ai_assistant not in AGENT_CONFIG:
             console.print(
