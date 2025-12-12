@@ -30,7 +30,7 @@ D3-Kit (Developer-Driven Development) is a methodology that inverts traditional 
 Install D3-Kit directly from GitHub using `uv`:
 
 ```bash
-uv tool install git+https://github.com/Nom-nom-hub/D3-Kit.git@latest
+uv tool install git+https://github.com/Nom-nom-hub/D3-Kit.git@master
 ```
 
 This installs D3-Kit as a command-line tool globally, making the `d3` command available in your terminal.
@@ -38,7 +38,7 @@ This installs D3-Kit as a command-line tool globally, making the `d3` command av
 Alternatively, with `pipx`:
 
 ```bash
-pipx install git+https://github.com/Nom-nom-hub/D3-Kit.git@latest
+pipx install git+https://github.com/Nom-nom-hub/D3-Kit.git@master
 ```
 
 Or clone and run locally:
