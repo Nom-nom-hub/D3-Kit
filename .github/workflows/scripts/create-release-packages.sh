@@ -228,20 +228,20 @@ EOF
      echo "Generated agent-specific commands for $agent"
    fi
 
-   # Copy D3 templates
-   [[ -d D3-templates ]] && { cp -r D3-templates "$base_dir/"; echo "Copied D3-templates"; }
+   # Copy D3 templates into .d3
+   [[ -d D3-templates ]] && { cp -r D3-templates "$D3_DIR/"; echo "Copied D3-templates"; }
 
-   # Create scripts directory with appropriate script type
-   mkdir -p "$base_dir/scripts"
+   # Create scripts directory inside .d3 with appropriate script type
+   mkdir -p "$D3_DIR/scripts"
    case $script in
      sh)
-       mkdir -p "$base_dir/scripts/bash"
-       echo "#!/bin/bash" > "$base_dir/scripts/bash/example.sh"
-       echo "# Add your bash scripts here" >> "$base_dir/scripts/bash/example.sh"
+       mkdir -p "$D3_DIR/scripts/bash"
+       echo "#!/bin/bash" > "$D3_DIR/scripts/bash/example.sh"
+       echo "# Add your bash scripts here" >> "$D3_DIR/scripts/bash/example.sh"
        ;;
      ps)
-       mkdir -p "$base_dir/scripts/powershell"
-       echo "# Add your PowerShell scripts here" > "$base_dir/scripts/powershell/example.ps1"
+       mkdir -p "$D3_DIR/scripts/powershell"
+       echo "# Add your PowerShell scripts here" > "$D3_DIR/scripts/powershell/example.ps1"
        ;;
    esac
 
